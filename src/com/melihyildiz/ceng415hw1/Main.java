@@ -20,6 +20,7 @@ class Main {
     public static void main(String[] args) throws IOException {
 
         String jsonFilePath = "scene2.json";
+        //region JSON Parse
         List<String> jsonFileLines = Files.readAllLines(Paths.get(jsonFilePath));
         StringBuilder jsonContents = new StringBuilder();
         for (String line : jsonFileLines) {
@@ -62,6 +63,7 @@ class Main {
                 }
             }
         }
+        //endregion
 
 
         int imageWidth = 800;
@@ -69,6 +71,7 @@ class Main {
         double far = 11.5;
         double near = 8;
         boolean depthImage = true;
+
         BufferedImage bufferedImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < imageWidth; i++) {
             for (int j = 0; j < imageHeight; j++) {
