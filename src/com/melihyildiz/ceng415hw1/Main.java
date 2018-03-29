@@ -4,7 +4,6 @@ import javafx.geometry.Point3D;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,10 +18,8 @@ import java.util.List;
  */
 class Main {
     public static void main(String[] args) throws IOException {
-        int imageWidth = 1280;
-        int imageHeight = 720;
 
-        String jsonFilePath = "scene1.json";
+        String jsonFilePath = "scene2.json";
         List<String> jsonFileLines = Files.readAllLines(Paths.get(jsonFilePath));
         StringBuilder jsonContents = new StringBuilder();
         for (String line : jsonFileLines) {
@@ -66,13 +63,27 @@ class Main {
             }
         }
 
+
+        int imageWidth = 800;
+        int imageHeight = 800;
+        double far = 11.5;
+        double near = 8;
+        boolean depthImage = true;
         BufferedImage bufferedImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
         for (int i = 0; i < imageWidth; i++) {
             for (int j = 0; j < imageHeight; j++) {
                 Ray ray = orthographicCamera.generateRayFromPixel(i, j, imageWidth, imageHeight);
                 Hit hit = new Hit(Double.MAX_VALUE, orthographicCamera.backgroundColor);
                 objectGroup.intersect(ray, hit, 0);
-                bufferedImage.setRGB(i, j, hit.color.getRGB());
+                int rgb = hit.color.getRGB();
+                if (depthImage) {
+                    double depth = (far - hit.t) / (far - near);
+                    // @link https://stackoverflow.com/a/1271822/2422887
+                    rgb = (int) OrthographicCamera.scaleInterval(depth, 0, 1, 0, 255);
+                    rgb *= 0x00010101;
+                    // rgb = rgb & depthRgb; // basic shading
+                }
+                bufferedImage.setRGB(i, j, rgb);
             }
         }
         JFrame frame = new JFrame();
